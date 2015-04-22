@@ -27,8 +27,10 @@ def saving(what_to_save, source='asd'):
 
 def main_script(seed, source):
     """ Search for metric name in html body """
+    print
+    print 'Searching for %s...' % source
     for url in seed:
         for script in connector(url)("script"):
             if str(script).__contains__(source):
-                print '%s [parsed]' % url
+                print '%s -> %s' % (url, source)
                 saving(url, source)

@@ -1,20 +1,13 @@
 #! /usr/bin/env python
 # -*- coding: utf-8 -*-
 
-"""
-"""
 
 from metricparser import connector, result
 
 
 def main():
-    DEBUG = True
-    if DEBUG:
-        # urls = ['urls/qa.html', 'urls/cb.html', 'urls/m1.html', 'urls/m2.html', 'urls/k1.html', 'urls/k2.html']
-        f = open('seed.txt', 'rb+')
-        urls = f.readlines()
-    else:
-        urls = ['http://bing.com/', ]
+    f = open('seed.txt', 'rb+')
+    urls = f.readlines()
 
     def saving_scripts(name, what_to_save, flag):
         """
@@ -29,7 +22,7 @@ def main():
         l = open(result_file, 'wb+')
         unique = []
         for url in seed:
-            unique.append(url)
+            unique.append(url.replace('\n', ''))
             print '%s [saved]' % url
             for links in connector(url)('a')[:max_number_of_distinct_urls]:
                 if links.get('href') and links.get('href') != 'None':
@@ -43,7 +36,11 @@ def main():
         for u in unique:
             l.write(u + '\n')
 
-    url_finder(urls, result, 1)
+    find = raw_input('Begin search for urls in %s? (y/n): ' % f.name)
+    if find == 'y':
+        num_urls = int(raw_input('Number of urls: '))
+        if num_urls:
+            url_finder(urls, result, num_urls)
 
 if __name__ == "__main__":
     main()
@@ -56,8 +53,18 @@ if __name__ == "__main__":
     for x in grabed_urls:
         if x != '\n':
             fixed_list.append(x.replace('\n', ''))
-    try:
-        main_script(fixed_list, source='mixpanel')
-    except Exception as e:
-        print e
+
+    search = raw_input('Search for metrics code in %s? (y/n): ' % result)
+    if search == 'y':
+        metric = int(raw_input('Mixpanel/Kissmetrics?(1/2): '))
+        if metric == 1:
+            source = 'mixpanel'
+        elif metric == 2:
+            source = 'kissmetrics'
+        try:
+            main_script(fixed_list, source=source)
+        except Exception as e:
+            print e
+    else:
+        exit()
 
